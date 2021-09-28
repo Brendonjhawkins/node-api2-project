@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
         if (posts) {
             res.status(200).json(posts);
           } else {
-            res.status(400).json({ message: 'posts not found' });
+            res.status(400).json({ message: "The posts information could not be retrieved" });
           }
         })
       .catch(error => {
@@ -26,7 +26,7 @@ router.get('/', (req, res) => {
         if (posts) {
             res.status(200).json(posts);
           } else {
-            res.status(404).json({ message: 'posts not found' });
+            res.status(404).json({ message: "The post with the specified ID does not exist" });
           }
         })
       .catch(error => {
@@ -37,18 +37,29 @@ router.get('/', (req, res) => {
       });
   });
 
-  router.post('/', (req, res) => {
-    posts.insert(req.body)
-      .then(post => {
-        res.status(201).json(post);
-      })
-      .catch(error => {
-        console.log(error);
-        res.status(500).json({
-          message: 'Error adding the posts',
+  router.post("/", (req, res) => {
+    const { title, contents } = req.body;
+    if (!title || !contents) {
+        res.status(400).json({
+        message: "Please provide title and contents for the post",
         });
-      });
-  });
+    } else {
+        posts.insert(req.body)
+        .then((id) => {
+            res.status(201).json({
+                id: id,
+                title: title,
+                contents: contents
+            });
+        })
+        .catch((error) => {
+            console.log(error);
+            res.status(500).json({
+            message: 'Error retrieving the posts',
+        });
+    })
+  }});
+    
 
   router.get('/:id/comments', async (req, res) => {
     try {
@@ -58,6 +69,7 @@ router.get('/', (req, res) => {
     } catch (err) {
       res.status(500).json({
         message: err.message,
+        
       })
     }
   });
