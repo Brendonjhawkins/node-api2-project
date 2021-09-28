@@ -59,13 +59,41 @@ router.get('/', (req, res) => {
         });
     })
   }});
+
+
+  router.delete('/:id', (req, res) => {
+      const deletedId = req.params.id
+    posts.remove(deletedId)
+      .then(count => {
+        if (count > 0) {
+          res.status(200).json({ 
+            deletedId
+        });
+        } else {
+          res.status(404).json({ 
+              message: "The post with the specified ID does not exist" });}
+      })
+      .catch(error => {
+        console.log(error);
+        res.status(500).json({
+            message: "The post could not be removed",
+        });
+      });
+  });
     
 
   router.get('/:id/comments', async (req, res) => {
     try {
       const { id } = req.params
-      const comments = await posts.findCommentById(id)
-      res.status(200).json(comments)
+      const comments = await posts.findPostComments(id)
+      if (comments) {
+        res.status(200).json(comments)
+      } else {
+        res.status(400).json({
+            message: "The post with the specified ID does not exist"
+          })
+      }
+      
     } catch (err) {
       res.status(500).json({
         message: err.message,
