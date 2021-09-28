@@ -5,9 +5,13 @@ const router = express.Router()
 
 router.get('/', (req, res) => {
     posts.find(req.query)
-      .then(post => {
-        res.status(200).json(post);
-      })
+    .then(posts => {
+        if (posts) {
+            res.status(200).json(posts);
+          } else {
+            res.status(400).json({ message: 'posts not found' });
+          }
+        })
       .catch(error => {
         console.log(error);
         res.status(500).json({
@@ -18,13 +22,13 @@ router.get('/', (req, res) => {
 
   router.get('/:id', (req, res) => {
     posts.findById(req.params.id)
-      .then(posts => {
+    .then(posts => {
         if (posts) {
-          res.status(200).json(posts);
-        } else {
-          res.status(404).json({ message: 'posts not found' });
-        }
-      })
+            res.status(200).json(posts);
+          } else {
+            res.status(404).json({ message: 'posts not found' });
+          }
+        })
       .catch(error => {
         console.log(error);
         res.status(500).json({
